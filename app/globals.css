@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: 'Fraunces', serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-brand-white text-brand-dark font-body antialiased;
+}
+
+/* Respeta la preferencia de "reducir movimiento" del usuario */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.container-page {
+  @apply max-w-6xl mx-auto px-5 sm:px-8;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center rounded-full bg-brand-dark text-brand-white font-semibold px-6 py-3
+    transition-all duration-300 ease-out hover:scale-[1.03] hover:shadow-softLg active:scale-95;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center rounded-full bg-brand-cream text-brand-dark font-semibold px-6 py-3
+    transition-all duration-300 ease-out hover:scale-[1.03] hover:shadow-soft active:scale-95;
+}
+
+.btn-outline {
+  @apply inline-flex items-center justify-center rounded-full border-2 border-brand-dark text-brand-dark font-semibold px-6 py-3
+    transition-all duration-300 ease-out hover:bg-brand-dark hover:text-brand-white active:scale-95;
+}
+
+.btn-donate {
+  @apply inline-flex items-center justify-center gap-2 rounded-full bg-brand-dark text-brand-cream font-semibold px-6 py-3
+    border-2 border-brand-cream shadow-soft transition-all duration-300 ease-out
+    hover:bg-brand-cream hover:text-brand-dark hover:border-brand-dark hover:scale-[1.04] active:scale-95 animate-softPulse;
+}
+
+.card {
+  @apply bg-brand-white rounded-3xl shadow-soft transition-transform duration-300 ease-out;
+}
+
+.input-field {
+  @apply w-full rounded-2xl border border-brand-dark/15 px-4 py-3 bg-brand-white
+    focus:outline-none focus:ring-2 focus:ring-brand-cream focus:border-brand-dark/30 transition;
+}
+
+.tag-pill {
+  @apply inline-block rounded-full bg-brand-cream/70 text-brand-dark text-xs font-semibold px-3 py-1 tracking-wide;
+}
