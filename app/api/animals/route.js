@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
+import { ensureUniqueSlug } from '@/lib/ensureUniqueSlug';
 
 // GET /api/animals -> lista pública de animales (con filtros opcionales)
 export async function GET(request) {
@@ -34,11 +35,23 @@ export async function POST(request) {
   const body = await request.json();
   const supabase = getSupabaseAdmin();
 
+  const slugResult = await ensureUniqueSlug({
+    supabase,
+    table: 'animals',
+    desiredSlug: body.slug,
+    fallbackText: body.name,
+  });
+
+  if (!slugResult.ok) {
+    return NextResponse.json({ error: slugResult.error }, { status: 409 });
+  }
+
   const { data, error } = await supabase
     .from('animals')
     .insert([
       {
         name: body.name,
+        slug: slugResult.slug,
         species: body.species,
         sex: body.sex,
         age: body.age,

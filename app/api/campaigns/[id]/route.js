@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
+import { ensureUniqueSlug } from '@/lib/ensureUniqueSlug';
 
 export async function GET(request, { params }) {
   const supabase = getSupabaseAdmin();
@@ -27,10 +28,23 @@ export async function PUT(request, { params }) {
   const body = await request.json();
   const supabase = getSupabaseAdmin();
 
+  const slugResult = await ensureUniqueSlug({
+    supabase,
+    table: 'campaigns',
+    desiredSlug: body.slug,
+    fallbackText: body.title,
+    excludeId: params.id,
+  });
+
+  if (!slugResult.ok) {
+    return NextResponse.json({ error: slugResult.error }, { status: 409 });
+  }
+
   const { data, error } = await supabase
     .from('campaigns')
     .update({
       title: body.title,
+      slug: slugResult.slug,
       description: body.description,
       info2: body.info2,
       start_date: body.start_date,

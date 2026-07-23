@@ -74,7 +74,7 @@ export default function CampaignCarousel() {
             <div className="p-8 flex flex-col justify-center">
               <h3 className="font-display text-2xl font-semibold mb-3">{campaign.title}</h3>
               <p className="text-brand-dark/70 mb-6 line-clamp-3">{campaign.description}</p>
-              <Link href={`/campanas/${campaign.id}`} className="btn-primary w-fit">
+              <Link href={`/campanas/${campaign.slug}`} className="btn-primary w-fit">
                 Ver más
               </Link>
             </div>

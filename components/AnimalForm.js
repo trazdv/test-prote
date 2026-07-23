@@ -4,9 +4,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { siteConfig } from '@/lib/siteConfig';
+import { slugify } from '@/lib/slugify';
 
 const emptyAnimal = {
   name: '',
+  slug: '',
   species: siteConfig.especies[0],
   sex: 'Macho',
   age: '',
@@ -19,12 +21,25 @@ export default function AnimalForm({ initialAnimal, animalId }) {
   const router = useRouter();
   const isEditing = Boolean(animalId);
   const [animal, setAnimal] = useState(initialAnimal || emptyAnimal);
+  const [slugTocado, setSlugTocado] = useState(isEditing); // si edita, no lo autogeneramos
   const [newTag, setNewTag] = useState('');
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
   const update = (field, value) => setAnimal((prev) => ({ ...prev, [field]: value }));
+
+  const handleNameChange = (value) => {
+    update('name', value);
+    if (!slugTocado) {
+      update('slug', slugify(value));
+    }
+  };
+
+  const handleSlugChange = (value) => {
+    setSlugTocado(true);
+    update('slug', slugify(value));
+  };
 
   const handleFileChange = async (e) => {
     const files = Array.from(e.target.files || []);
@@ -99,7 +114,7 @@ export default function AnimalForm({ initialAnimal, animalId }) {
             required
             className="input-field"
             value={animal.name}
-            onChange={(e) => update('name', e.target.value)}
+            onChange={(e) => handleNameChange(e.target.value)}
           />
         </div>
         <div>
@@ -136,6 +151,20 @@ export default function AnimalForm({ initialAnimal, animalId }) {
             <option value="Hembra">Hembra</option>
           </select>
         </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1.5">URL de la ficha</label>
+        <input
+          required
+          className="input-field"
+          value={animal.slug}
+          onChange={(e) => handleSlugChange(e.target.value)}
+        />
+        <p className="text-xs text-brand-dark/50 mt-1.5">
+          Así se verá: tuprotectora.org/animales/<strong>{animal.slug || 'ejemplo'}</strong>. Solo
+          letras, números y guiones. Útil para diferenciar animales con el mismo nombre.
+        </p>
       </div>
 
       <div>

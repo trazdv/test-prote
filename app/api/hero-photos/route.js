@@ -2,15 +2,14 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
-import { ensureUniqueSlug } from '@/lib/ensureUniqueSlug';
 
-// GET /api/campaigns -> lista pública de campañas
+// GET /api/hero-photos -> lista pública de fotos del carrusel de portada
 export async function GET() {
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
-    .from('campaigns')
+    .from('hero_photos')
     .select('*')
-    .order('start_date', { ascending: false });
+    .order('created_at', { ascending: true });
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -19,7 +18,7 @@ export async function GET() {
   return NextResponse.json(data);
 }
 
-// POST /api/campaigns -> crear una campaña nueva (solo cuentas del panel)
+// POST /api/hero-photos -> añade una foto ya subida (solo cuentas del panel)
 export async function POST(request) {
   const session = await getServerSession(authOptions);
   if (!session) {
@@ -27,32 +26,14 @@ export async function POST(request) {
   }
 
   const body = await request.json();
-  const supabase = getSupabaseAdmin();
-
-  const slugResult = await ensureUniqueSlug({
-    supabase,
-    table: 'campaigns',
-    desiredSlug: body.slug,
-    fallbackText: body.title,
-  });
-
-  if (!slugResult.ok) {
-    return NextResponse.json({ error: slugResult.error }, { status: 409 });
+  if (!body.url) {
+    return NextResponse.json({ error: 'Falta la URL de la foto' }, { status: 400 });
   }
 
+  const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
-    .from('campaigns')
-    .insert([
-      {
-        title: body.title,
-        slug: slugResult.slug,
-        description: body.description,
-        info2: body.info2,
-        start_date: body.start_date,
-        end_date: body.end_date || null,
-        photos: body.photos || [],
-      },
-    ])
+    .from('hero_photos')
+    .insert([{ url: body.url }])
     .select()
     .single();
 

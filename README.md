@@ -6,8 +6,11 @@ falta saltarse nada.
 
 > 📌 **¿Ya tenías un proyecto de Supabase creado de una versión anterior?** Solo tienes que volver
 > a ejecutar el archivo `sql/schema.sql` completo en el SQL Editor: los `create table if not
-> exists` no tocan lo que ya tenías, y añadirán las tablas nuevas de `campaigns` (campañas) y el
-> bucket `campaign-photos` sin borrar ningún animal ni cuenta existente.
+> exists` y `alter table ... add column if not exists` no tocan lo que ya tenías, y añadirán las
+> tablas y columnas nuevas (campañas, fotos de portada, y la URL personalizada de cada animal y
+> campaña) sin borrar nada de lo que ya tuvieras. Si ya tenías animales o campañas creados antes de
+> añadir las URLs personalizadas, el propio script les genera una automáticamente a partir de su
+> nombre.
 
 Todo lo que usamos tiene un **plan gratuito** suficiente para una protectora normal. Lo único que
 tendrás que pagar seguro es el **dominio** (el nombre de la web, tipo `protectoraamigospeludos.org`),
@@ -154,7 +157,31 @@ panel para crear una cuenta para cada voluntario, con su propio usuario y contra
 
 ---
 
-## 7. Conecta los formularios de Google Forms
+## 7. Que aparezcáis en Google al buscar "Ayuda Animal"
+
+La web ya viene preparada técnicamente para un buen SEO (metadatos, mapa del sitio automático en
+`/sitemap.xml`, `robots.txt`, datos estructurados para que Google entienda que sois una ONG). Pero
+aparecer bien posicionados, por encima de vuestras redes sociales, no es instantáneo: Google tarda
+días o semanas en "descubrir" una web nueva, y el resto depende de estos pasos:
+
+1. **Da de alta la web en Google Search Console** (gratis): entra en
+   https://search.google.com/search-console, añade tu dominio (`ayudaanimalmurcia.org`) como
+   propiedad, y verifica que eres el propietario (Google te dará un registro TXT para añadir en el
+   DNS de IONOS, muy parecido a como añadiste el registro A).
+2. Una vez verificado, en el menú **Sitemaps**, envía la URL `https://www.ayudaanimalmurcia.org/sitemap.xml`.
+   Esto ya incluye automáticamente todos los animales y campañas, y se actualiza solo cuando añadís
+   nuevos.
+3. **Enlaza tu web desde Instagram y Facebook** (en la biografía/enlace de cada perfil). Estos
+   enlaces desde perfiles que ya tienen autoridad ayudan mucho a que Google confíe antes en la web
+   nueva.
+4. Ten paciencia: es normal que la web tarde entre 2 y 8 semanas en empezar a aparecer bien en los
+   resultados, y que gane posiciones poco a poco a medida que se actualiza con nuevos animales y
+   campañas (Google valora el contenido que se mantiene vivo).
+5. Si quieres actualizar más adelante los textos que aparecen en el resultado de búsqueda (título y
+   descripción), edita el `title` y la `description` dentro del bloque `metadata` en `app/layout.js`.
+
+## 8. Conecta los formularios de Google Forms
+
 
 La web tiene un formulario propio y bonito (con el diseño de la protectora) para que la gente
 solicite adopción o acogida. Al enviarlo, esos datos se mandan automáticamente a un Google Form
@@ -202,7 +229,7 @@ https://docs.google.com/forms/d/e/1FAIpQLSc.../formResponse
 
 ---
 
-## 8. Cómo añadir y gestionar animales (uso diario)
+## 9. Cómo añadir y gestionar animales (uso diario)
 
 1. Entra en tu web y ve a `/admin/login` (hay un enlace discreto "Acceso voluntarios" al final de
    la página, en el pie).
@@ -223,6 +250,20 @@ cómo participar o comprar (por ejemplo, a quién escribir, el precio, el enlace
 Las campañas cuya fecha de hoy esté entre el inicio y el fin aparecen automáticamente en el
 carrusel de la página principal y en la pestaña "Campañas".
 
+### Carrusel de fotos de la portada
+
+Desde **"Carrusel de portada"** en el panel puedes subir las fotos que quieras que roten
+automáticamente en la imagen grande de la página principal, y eliminarlas cuando quieras. Si no
+subes ninguna, se muestra una ilustración de ejemplo.
+
+### URL personalizada de cada animal y campaña
+
+Al crear un animal o una campaña, verás un campo **"URL de la ficha"** que se rellena solo a partir
+del nombre (por ejemplo, "Elvis" → `elvis`), pero puedes escribir la que prefieras. Esto es útil
+cuando hay dos animales con el mismo nombre a la vez: a uno le puedes poner `elvis` y al otro
+`elvis-2`, por ejemplo. Si la URL que escribes ya está en uso, la web te avisará para que elijas
+otra antes de guardar.
+
 ### Gestionar cuentas de voluntarios (solo superadmin)
 
 Si tu cuenta es de tipo **superadmin**, verás un botón **"Gestionar cuentas"** en el panel. Ahí puedes:
@@ -238,7 +279,7 @@ Si tu cuenta es de tipo **superadmin**, verás un botón **"Gestionar cuentas"**
 
 ---
 
-## 9. Cómo personalizar la web en el futuro
+## 10. Cómo personalizar la web en el futuro
 
 Todo lo que un voluntario nuevo necesita tocar está muy localizado, para que no haga falta saber
 programar:
@@ -250,6 +291,14 @@ programar:
   (`cream` y `dark`; el blanco es el fondo por defecto).
 - **Imagen de portada de la home**: sustituye el archivo `public/hero-animals.svg` por tu propia
   imagen (puede ser `.jpg` o `.png`, solo cambia también la referencia en `app/page.js`).
+- **Icono de la pestaña del navegador (favicon)**: se genera automáticamente a partir de
+  `public/logo.svg`. El día que sustituyas el logo por el definitivo, regenera también
+  `favicon.ico`, `favicon-32x32.png` y `apple-touch-icon.png` ejecutando
+  `python scripts/generate-favicons.py` (requiere Python y `pip install cairosvg pillow` una vez),
+  o subiendo tu logo a https://realfavicongenerator.net si no tienes Python a mano.
+- **Formulario de "Hazte voluntario"**: de momento tiene nombre, email, teléfono, disponibilidad y
+  un mensaje libre. En cuanto nos digas los campos exactos que quieres, se ajusta el formulario y
+  su `googleForms.voluntariado` en `lib/siteConfig.js` igual que se hizo con adopción/acogida.
 - **Cambiar la contraseña de una cuenta**: de momento no hay un botón de "cambiar contraseña", así
   que la forma más sencilla es que el superadmin elimine esa cuenta desde "Gestionar cuentas" y
   cree una nueva para esa misma persona con la contraseña nueva.
@@ -259,7 +308,7 @@ programar:
 
 ---
 
-## 10. Seguridad: cómo funcionan las cuentas y el login
+## 11. Seguridad: cómo funcionan las cuentas y el login
 
 - Cada voluntario tiene su **propia cuenta** (usuario + contraseña), guardada en la tabla
   `admin_users` de Supabase. La contraseña **nunca se guarda como texto plano**: se guarda cifrada
@@ -285,7 +334,7 @@ programar:
 
 ---
 
-## 11. Resumen de costes estimados
+## 12. Resumen de costes estimados
 
 | Concepto | Coste aproximado |
 |---|---|
@@ -301,7 +350,7 @@ Supabase o Vercel sin tener que cambiar nada del código.
 
 ---
 
-## 12. ¿Y si algo falla?
+## 13. ¿Y si algo falla?
 
 - Si la web no arranca en Vercel, mira la pestaña **Deployments > (último deploy) > Building** para
   ver el error exacto: casi siempre es una variable de entorno mal copiada.

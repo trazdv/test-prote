@@ -13,6 +13,7 @@ export default function Navbar() {
     { href: '/', label: 'Inicio' },
     { href: '/animales', label: 'Animales' },
     { href: '/campanas', label: 'Campañas' },
+    { href: '/voluntariado', label: 'Hazte voluntario' },
     { href: '/#sobre-nosotros', label: 'Sobre nosotros' },
     { href: '/#contacto', label: 'Contacto' },
   ];

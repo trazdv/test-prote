@@ -45,6 +45,9 @@ export default function AdminDashboardPage() {
           <Link href="/admin/campanas" className="btn-outline">
             Gestionar campañas
           </Link>
+          <Link href="/admin/portada" className="btn-outline">
+            Carrusel de portada
+          </Link>
           {esSuperadmin && (
             <Link href="/admin/usuarios" className="btn-outline">
               Gestionar cuentas

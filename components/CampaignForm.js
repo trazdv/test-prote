@@ -3,9 +3,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { slugify } from '@/lib/slugify';
 
 const emptyCampaign = {
   title: '',
+  slug: '',
   description: '',
   info2: '',
   start_date: new Date().toISOString().slice(0, 10),
@@ -17,11 +19,24 @@ export default function CampaignForm({ initialCampaign, campaignId }) {
   const router = useRouter();
   const isEditing = Boolean(campaignId);
   const [campaign, setCampaign] = useState(initialCampaign || emptyCampaign);
+  const [slugTocado, setSlugTocado] = useState(isEditing);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
   const update = (field, value) => setCampaign((prev) => ({ ...prev, [field]: value }));
+
+  const handleTitleChange = (value) => {
+    update('title', value);
+    if (!slugTocado) {
+      update('slug', slugify(value));
+    }
+  };
+
+  const handleSlugChange = (value) => {
+    setSlugTocado(true);
+    update('slug', slugify(value));
+  };
 
   const handleFileChange = async (e) => {
     const files = Array.from(e.target.files || []);
@@ -85,8 +100,22 @@ export default function CampaignForm({ initialCampaign, campaignId }) {
           className="input-field"
           placeholder="Ej. Campamento de verano 2026"
           value={campaign.title}
-          onChange={(e) => update('title', e.target.value)}
+          onChange={(e) => handleTitleChange(e.target.value)}
         />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1.5">URL de la campaña</label>
+        <input
+          required
+          className="input-field"
+          value={campaign.slug}
+          onChange={(e) => handleSlugChange(e.target.value)}
+        />
+        <p className="text-xs text-brand-dark/50 mt-1.5">
+          Así se verá: tuprotectora.org/campanas/<strong>{campaign.slug || 'ejemplo'}</strong>. Solo
+          letras, números y guiones.
+        </p>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-5">

@@ -16,7 +16,7 @@ export default function AnimalCard({ animal, index = 0 }) {
       transition={{ duration: 0.5, delay: index * 0.05, ease: 'easeOut' }}
     >
       <Link
-        href={`/animales/${animal.id}`}
+        href={`/animales/${animal.slug}`}
         className="card group block overflow-hidden hover:-translate-y-1"
       >
         <div className="relative w-full aspect-[4/3] overflow-hidden rounded-t-3xl bg-brand-cream/30">

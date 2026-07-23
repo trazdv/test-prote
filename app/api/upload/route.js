@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
-const BUCKETS_PERMITIDOS = ['animal-photos', 'campaign-photos'];
+const BUCKETS_PERMITIDOS = ['animal-photos', 'campaign-photos', 'hero-photos'];
 
 // POST /api/upload -> sube una imagen al bucket de Supabase Storage indicado
 // y devuelve la URL pública para guardarla junto al animal o campaña.

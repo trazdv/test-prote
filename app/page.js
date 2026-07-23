@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { siteConfig } from '@/lib/siteConfig';
 import CampaignCarousel from '@/components/CampaignCarousel';
+import HeroCarousel from '@/components/HeroCarousel';
 import HeartIcon from '@/components/HeartIcon';
 
 export default function HomePage() {
@@ -30,22 +30,8 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="relative aspect-square rounded-3xl overflow-hidden shadow-softLg animate-softPulse">
-          <Image
-            src="/hero-animals.svg"
-            alt="Animales de la protectora"
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute -bottom-6 -left-6 w-28 h-28 sm:w-36 sm:h-36 drop-shadow-xl">
-            <Image
-              src="/logo.svg"
-              alt={`Sello de ${siteConfig.nombreProtectora}`}
-              fill
-              className="object-contain"
-            />
-          </div>
+        <div className="animate-softPulse">
+          <HeroCarousel />
         </div>
       </section>
 

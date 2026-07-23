@@ -12,7 +12,7 @@ export default function CampaignCard({ campaign }) {
   const cover = campaign.photos?.[0] || '/placeholder-animal.svg';
 
   return (
-    <Link href={`/campanas/${campaign.id}`} className="card group block overflow-hidden hover:-translate-y-1 h-full">
+    <Link href={`/campanas/${campaign.slug}`} className="card group block overflow-hidden hover:-translate-y-1 h-full">
       <div className="relative w-full aspect-[4/3] overflow-hidden rounded-t-3xl bg-brand-cream/30">
         <Image
           src={cover}
