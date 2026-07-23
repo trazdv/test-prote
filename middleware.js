@@ -6,9 +6,9 @@ export default withAuth({
   },
 });
 
-// Protege todo lo que hay bajo /admin excepto la propia página de login,
-// y protege también las rutas de API que modifican animales (POST/PUT/DELETE
-// se comprueban además dentro de cada route.js por seguridad extra).
+// Protege /admin (el panel principal) y todo lo que hay debajo de /admin/,
+// excepto la propia página de login. Las rutas de API que modifican datos
+// se comprueban además dentro de cada route.js por seguridad extra.
 export const config = {
-  matcher: ['/admin/((?!login).*)'],
+  matcher: ['/admin', '/admin/((?!login).*)'],
 };
