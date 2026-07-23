@@ -2,6 +2,7 @@ import { Fraunces, Inter } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import WhatsAppButton from '@/components/WhatsAppButton';
 import AuthSessionProvider from '@/providers/SessionProvider';
 import { siteConfig } from '@/lib/siteConfig';
 
@@ -64,7 +65,6 @@ export default function RootLayout({ children }) {
     logo: `${siteConfig.url}/logo.svg`,
     description: siteConfig.descripcionCorta,
     email: siteConfig.contacto.email,
-    telephone: siteConfig.contacto.telefono,
     address: {
       '@type': 'PostalAddress',
       streetAddress: siteConfig.contacto.direccion,
@@ -87,6 +87,7 @@ export default function RootLayout({ children }) {
           <Navbar />
           <main className="min-h-screen">{children}</main>
           <Footer />
+          <WhatsAppButton />
         </AuthSessionProvider>
       </body>
     </html>

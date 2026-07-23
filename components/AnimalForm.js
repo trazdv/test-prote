@@ -81,10 +81,31 @@ export default function AnimalForm({ initialAnimal, animalId }) {
     update('tags', animal.tags.filter((t) => t !== tag));
   };
 
+  // La categoría de edad (Cachorro/Adulto) se guarda como una etiqueta más,
+  // pero se gestiona con un selector obligatorio aparte (no en la lista de
+  // etiquetas libres) porque determina a qué formulario de adopción se
+  // enlaza el botón "¡Quiero adoptarlo!".
+  const categoriaEdad = animal.tags.includes('Cachorro')
+    ? 'Cachorro'
+    : animal.tags.includes('Adulto')
+      ? 'Adulto'
+      : '';
+
+  const handleCategoriaEdadChange = (value) => {
+    const sinCategoria = animal.tags.filter((t) => t !== 'Cachorro' && t !== 'Adulto');
+    update('tags', value ? [...sinCategoria, value] : sinCategoria);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSaving(true);
     setError('');
+
+    if (!categoriaEdad) {
+      setError('Selecciona si es Cachorro o Adulto: es obligatorio para saber a qué formulario de adopción enlazar.');
+      return;
+    }
+
+    setSaving(true);
 
     try {
       const url = isEditing ? `/api/animals/${animalId}` : '/api/animals';
@@ -150,6 +171,24 @@ export default function AnimalForm({ initialAnimal, animalId }) {
             <option value="Macho">Macho</option>
             <option value="Hembra">Hembra</option>
           </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1.5">
+            Categoría (obligatorio)
+          </label>
+          <select
+            required
+            className="input-field"
+            value={categoriaEdad}
+            onChange={(e) => handleCategoriaEdadChange(e.target.value)}
+          >
+            <option value="">Selecciona...</option>
+            <option value="Cachorro">Cachorro</option>
+            <option value="Adulto">Adulto</option>
+          </select>
+          <p className="text-xs text-brand-dark/50 mt-1.5">
+            Junto con el tipo de animal, decide a qué formulario de adopción enlaza el botón.
+          </p>
         </div>
       </div>
 

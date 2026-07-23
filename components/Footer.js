@@ -12,7 +12,7 @@ export default function Footer() {
               src="/logo.svg"
               alt={`Sello de ${siteConfig.nombreProtectora}`}
               fill
-              className="object-contain [filter:brightness(0)_invert(1)]"
+              className="object-contain"
             />
           </div>
           <h3 className="font-display text-lg mb-3">{siteConfig.nombreProtectora}</h3>
@@ -26,8 +26,13 @@ export default function Footer() {
           <ul className="text-sm text-brand-white/70 space-y-2">
             <li>{siteConfig.contacto.direccion}</li>
             <li>
-              <a href={`tel:${siteConfig.contacto.telefono}`} className="hover:text-brand-cream transition">
-                {siteConfig.contacto.telefono}
+              <a
+                href={siteConfig.contacto.whatsapp}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-brand-cream transition"
+              >
+                Háblanos por WhatsApp
               </a>
             </li>
             <li>

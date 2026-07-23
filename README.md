@@ -180,66 +180,63 @@ días o semanas en "descubrir" una web nueva, y el resto depende de estos pasos:
 5. Si quieres actualizar más adelante los textos que aparecen en el resultado de búsqueda (título y
    descripción), edita el `title` y la `description` dentro del bloque `metadata` en `app/layout.js`.
 
-## 8. Conecta los formularios de Google Forms
+## 8. Los formularios (adopción, acogida y voluntariado)
 
+Esto ahora es muy sencillo: los botones de la web ("¡Quiero adoptarlo!", "¡Quiero acogerlo!",
+"Hazte voluntario"...) son enlaces normales que abren tu Google Form correspondiente **en una
+pestaña nueva**. No hay ninguna integración compleja ni envío automático: el visitante rellena el
+formulario directamente en Google, y vosotros recibís la respuesta igual que siempre (por email o
+en una hoja de cálculo si vinculas el formulario a Google Sheets).
 
-La web tiene un formulario propio y bonito (con el diseño de la protectora) para que la gente
-solicite adopción o acogida. Al enviarlo, esos datos se mandan automáticamente a un Google Form
-tuyo, para que os lleguen igual que si lo hubierais recibido "a mano" en Google Forms (por email,
-en una hoja de cálculo, etc.), y el usuario ve el mensaje bonito de agradecimiento en la web.
+Todos los enlaces se guardan en un único sitio: `lib/siteConfig.js`, apartado
+`formulariosExternos`:
 
-Necesitas **dos Google Forms**: uno para adopción y otro para acogida (pueden ser iguales, o el
-mismo duplicado). Cada uno debe tener estos campos, en este orden:
-
-1. Nombre completo (texto corto)
-2. Email (texto corto)
-3. Teléfono (texto corto)
-4. Mensaje / motivo (párrafo)
-5. Nombre del animal (texto corto)
-6. Tipo de solicitud (texto corto)
-
-### Cómo obtener los datos que necesita la web:
-
-1. Crea el formulario en https://forms.google.com con esos 6 campos.
-2. Dale a los tres puntos (⋮) arriba a la derecha > **Obtener enlace para rellenar previamente**.
-3. Rellena cualquier cosa en cada campo (ej. "Prueba") y dale a **Obtener enlace**.
-4. Copia ese enlace larguísimo y pégalo en un editor de texto. Verás algo así:
-
-```
-https://docs.google.com/forms/d/e/1FAIpQLSc.../viewform?usp=pp_url&entry.111111111=Prueba&entry.222222222=Prueba...
+```js
+formulariosExternos: {
+  adopcion: {
+    perro_cachorro: '...',
+    perro_adulto: '...',
+    gato_cachorro: '...',
+    gato_adulto: '...',
+  },
+  acogida: '...',
+  voluntariado: '...',
+  voluntariadoUmu: '...',
+},
 ```
 
-5. Cada trozo `entry.XXXXXXX=Prueba` corresponde a uno de tus campos, **en el mismo orden en que
-   los rellenaste**. Copia cada `entry.XXXXXXX` (sin el `=Prueba`) al archivo `lib/siteConfig.js`
-   de la web, en el apartado `googleForms`, en el campo que corresponda (`nombreSolicitante`,
-   `email`, `telefono`, `mensaje`, `nombreAnimal`, `tipoSolicitud`).
-6. Para la URL de envío (`actionUrl`), coge la misma URL larga y cambia la parte final
-   `/viewform` por `/formResponse`. Por ejemplo:
+**¿Cómo sabe la web a qué formulario enlazar el botón "¡Quiero adoptarlo!"?** Se calcula
+automáticamente combinando dos datos de la ficha del animal:
+- El **tipo de animal** (Perro o Gato).
+- La **categoría** (Cachorro o Adulto), un campo obligatorio al crear o editar un animal.
 
-```
-https://docs.google.com/forms/d/e/1FAIpQLSc.../formResponse
-```
+Si en algún momento cambias alguno de los 7 enlaces (por ejemplo, si recreas un formulario en
+Google Forms y te da una URL nueva), solo tienes que sustituir esa URL en este archivo, guardar,
+y hacer `git add . && git commit -m "Actualizar enlaces de formularios" && git push`.
 
-7. Repite todo el proceso para el segundo formulario (acogida).
-8. Guarda el archivo, haz `git add . && git commit -m "Configurar Google Forms" && git push`, y
-   Vercel publicará el cambio solo.
-
-> 💡 Consejo: en tu Google Form, ve a la pestaña **Respuestas > vincular con Hojas de cálculo**
+> 💡 Consejo: en cada Google Form, ve a la pestaña **Respuestas > vincular con Hojas de cálculo**
 > para que todas las solicitudes que lleguen se guarden ordenadas en un Google Sheet automáticamente.
-
----
 
 ## 9. Cómo añadir y gestionar animales (uso diario)
 
-1. Entra en tu web y ve a `/admin/login` (hay un enlace discreto "Acceso voluntarios" al final de
-   la página, en el pie).
+1. Entra en tu web y ve a `/admin/login` (hay un enlace discreto "Acceso al panel (equipo)" al
+   final de la página, en el pie).
 2. Inicia sesión con el usuario y contraseña que configuraste.
 3. Desde el panel puedes:
-   - **Añadir animal**: nombre, tipo, sexo, edad, descripción, etiquetas y varias fotos.
+   - **Añadir animal**: nombre, tipo (Perro o Gato), sexo, edad, descripción, etiquetas y varias
+     fotos.
+   - **Categoría (obligatorio)**: además, hay que elegir siempre **Cachorro** o **Adulto**. Junto
+     con el tipo de animal, esto decide automáticamente a cuál de los 4 formularios de adopción
+     (perro cachorro / perro adulto / gato cachorro / gato adulto) enlaza el botón
+     "¡Quiero adoptarlo!" de su ficha.
    - **Editar** cualquier ficha existente.
    - **Eliminar** un animal cuando ya ha sido adoptado.
 4. Usa la etiqueta **"Acogida"** en los animales que también admitan acogida temporal: al hacerlo,
-   aparecerá automáticamente el botón "¡Quiero acogerlo!" en su ficha.
+   aparecerá automáticamente el botón "¡Quiero acogerlo!" en su ficha (este es el mismo formulario
+   de acogida para cualquier tipo de animal).
+
+> 📌 Los animales que no sean perro ni gato (casos especiales) se gestionan en privado, sin
+> formulario público: el desplegable de tipo de animal solo ofrece Perro y Gato a propósito.
 
 ### Gestionar campañas (campamentos, sorteos, merchandising...)
 
