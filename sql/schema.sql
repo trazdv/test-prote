@@ -1,5 +1,7 @@
 -- ============================================================
 --  Ejecuta este script en Supabase > SQL Editor (una sola vez)
+--  Es seguro volver a ejecutarlo entero en el futuro (por ejemplo,
+--  cuando actualices el proyecto): no borra nada de lo que ya tengas.
 -- ============================================================
 
 create extension if not exists "pgcrypto";
@@ -21,6 +23,7 @@ create table if not exists animals (
 alter table animals enable row level security;
 
 -- Cualquier persona puede LEER la lista de animales (para la web pública)
+drop policy if exists "Lectura pública de animales" on animals;
 create policy "Lectura pública de animales"
   on animals for select
   using (true);
@@ -89,6 +92,7 @@ create table if not exists campaigns (
 
 alter table campaigns enable row level security;
 
+drop policy if exists "Lectura pública de campañas" on campaigns;
 create policy "Lectura pública de campañas"
   on campaigns for select
   using (true);
@@ -140,6 +144,7 @@ create table if not exists hero_photos (
 
 alter table hero_photos enable row level security;
 
+drop policy if exists "Lectura pública de fotos de portada" on hero_photos;
 create policy "Lectura pública de fotos de portada"
   on hero_photos for select
   using (true);
