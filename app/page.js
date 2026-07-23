@@ -21,7 +21,7 @@ export default function HomePage() {
             <Link href="/animales" className="btn-primary">
               Ver animales en adopción
             </Link>
-            <Link href="/animales?tag=Acogida" className="btn-outline">
+            <Link href="/animales?acogida=1" className="btn-outline">
               Quiero acoger
             </Link>
             <Link href="/donar" className="btn-donate">

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { slugify } from '@/lib/slugify';
+import RichTextEditor from './RichTextEditor';
 
 const emptyCampaign = {
   title: '',
@@ -13,12 +14,17 @@ const emptyCampaign = {
   start_date: new Date().toISOString().slice(0, 10),
   end_date: '',
   photos: [],
+  coverPhoto: null,
 };
 
 export default function CampaignForm({ initialCampaign, campaignId }) {
   const router = useRouter();
   const isEditing = Boolean(campaignId);
-  const [campaign, setCampaign] = useState(initialCampaign || emptyCampaign);
+  const [campaign, setCampaign] = useState(
+    initialCampaign
+      ? { ...emptyCampaign, ...initialCampaign, coverPhoto: initialCampaign.cover_photo ?? initialCampaign.coverPhoto ?? null }
+      : emptyCampaign
+  );
   const [slugTocado, setSlugTocado] = useState(isEditing);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -65,6 +71,9 @@ export default function CampaignForm({ initialCampaign, campaignId }) {
 
   const removePhoto = (url) => {
     update('photos', campaign.photos.filter((p) => p !== url));
+    if (campaign.coverPhoto === url) {
+      update('coverPhoto', null);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -142,12 +151,10 @@ export default function CampaignForm({ initialCampaign, campaignId }) {
 
       <div>
         <label className="block text-sm font-medium mb-1.5">Descripción general</label>
-        <textarea
-          rows={4}
-          className="input-field"
-          placeholder="En qué consiste la campaña..."
+        <RichTextEditor
           value={campaign.description}
-          onChange={(e) => update('description', e.target.value)}
+          onChange={(html) => update('description', html)}
+          placeholder="En qué consiste la campaña..."
         />
       </div>
 
@@ -155,33 +162,46 @@ export default function CampaignForm({ initialCampaign, campaignId }) {
         <label className="block text-sm font-medium mb-1.5">
           Cuadro "¿Te interesa?" (cómo participar o comprar)
         </label>
-        <textarea
-          rows={4}
-          className="input-field"
-          placeholder="Ej. Puedes comprar tu boleto por 2€ escribiéndonos a... / El juego de mesa se puede reservar en..."
+        <RichTextEditor
           value={campaign.info2}
-          onChange={(e) => update('info2', e.target.value)}
+          onChange={(html) => update('info2', html)}
+          placeholder="Ej. Puedes comprar tu boleto por 2€ escribiéndonos a... / El juego de mesa se puede reservar en..."
         />
       </div>
 
       <div>
         <label className="block text-sm font-medium mb-1.5">Fotos</label>
         <div className="flex flex-wrap gap-3 mb-3">
-          {(campaign.photos || []).map((url) => (
-            <div key={url} className="relative w-24 h-24 rounded-2xl overflow-hidden group">
-              <Image src={url} alt="Foto de la campaña" fill className="object-cover" />
-              <button
-                type="button"
-                onClick={() => removePhoto(url)}
-                className="absolute inset-0 bg-brand-dark/60 text-brand-white opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-sm"
-              >
-                Quitar
-              </button>
-            </div>
-          ))}
+          {(campaign.photos || []).map((url) => {
+            const esPortada = (campaign.coverPhoto || campaign.photos[0]) === url;
+            return (
+              <div key={url} className="relative w-24 h-24 rounded-2xl overflow-hidden group">
+                <Image src={url} alt="Foto de la campaña" fill className="object-cover" />
+                {esPortada && (
+                  <span className="absolute top-1 left-1 bg-brand-cream text-brand-dark text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                    Portada
+                  </span>
+                )}
+                <div className="absolute inset-0 bg-brand-dark/60 text-brand-white opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center gap-1 text-xs">
+                  {!esPortada && (
+                    <button type="button" onClick={() => update('coverPhoto', url)} className="underline">
+                      Usar como portada
+                    </button>
+                  )}
+                  <button type="button" onClick={() => removePhoto(url)} className="underline">
+                    Quitar
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
         <input type="file" accept="image/*" multiple onChange={handleFileChange} disabled={uploading} />
         {uploading && <p className="text-sm text-brand-dark/50 mt-2">Subiendo fotos...</p>}
+        <p className="text-xs text-brand-dark/50 mt-2">
+          La foto marcada como "Portada" es la que aparece en el listado de campañas. Si no eliges
+          ninguna, se usa la primera foto subida.
+        </p>
       </div>
 
       {error && <p className="text-red-600 text-sm">{error}</p>}

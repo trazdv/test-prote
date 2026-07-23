@@ -51,16 +51,18 @@ export default function CampanaDetailPage({ params }) {
         {campaign.info2 && (
           <div className="card bg-brand-cream/50 p-6 mb-8">
             <h2 className="font-display text-xl font-semibold mb-3">¿Te interesa?</h2>
-            <p className="text-brand-dark/80 leading-relaxed whitespace-pre-line">
-              {campaign.info2}
-            </p>
+            <div
+              className="rich-text text-brand-dark/80"
+              dangerouslySetInnerHTML={{ __html: campaign.info2 }}
+            />
           </div>
         )}
 
         {campaign.description && (
-          <p className="text-brand-dark/80 leading-relaxed whitespace-pre-line">
-            {campaign.description}
-          </p>
+          <div
+            className="rich-text text-brand-dark/80"
+            dangerouslySetInnerHTML={{ __html: campaign.description }}
+          />
         )}
       </div>
     </div>

@@ -42,16 +42,43 @@ export default function AnimalDetailPage({ params }) {
   }
 
   const puedeAcoger = (animal.tags || []).some((t) => t.toLowerCase() === 'acogida');
-  // El botón de adopción solo tiene sentido para perros y gatos con su
-  // categoría (Cachorro/Adulto) rellenada; el resto son casos especiales
-  // gestionados en privado, sin formulario público.
   const esPerroOGato = animal.species === 'Perro' || animal.species === 'Gato';
   const tieneCategoria = (animal.tags || []).some((t) => t === 'Cachorro' || t === 'Adulto');
   const puedeAdoptar = esPerroOGato && tieneCategoria;
 
+  const Botones = ({ className }) => (
+    <div className={className}>
+      {puedeAdoptar && (
+        <a
+          href={getAdoptionFormUrl(animal)}
+          target="_blank"
+          rel="noreferrer"
+          className="btn-primary"
+        >
+          ¡Quiero adoptarlo!
+        </a>
+      )}
+      {puedeAcoger && (
+        <a
+          href={siteConfig.formulariosExternos.acogida}
+          target="_blank"
+          rel="noreferrer"
+          className="btn-secondary"
+        >
+          ¡Quiero acogerlo!
+        </a>
+      )}
+    </div>
+  );
+
   return (
     <div className="container-page py-14 grid md:grid-cols-2 gap-12">
-      <Carousel photos={animal.photos} alt={animal.name} />
+      <div>
+        <Carousel photos={animal.photos} alt={animal.name} />
+        {/* En escritorio, los botones van justo debajo de las fotos para que
+            no queden muy abajo si la descripción es larga. */}
+        <Botones className="hidden md:flex flex-wrap gap-4 mt-6" />
+      </div>
 
       <div className="animate-fadeInUp">
         <h1 className="font-display text-4xl font-semibold mb-2">{animal.name}</h1>
@@ -65,32 +92,13 @@ export default function AnimalDetailPage({ params }) {
           ))}
         </div>
 
-        <p className="text-brand-dark/80 leading-relaxed whitespace-pre-line mb-10">
-          {animal.description}
-        </p>
+        <div
+          className="rich-text text-brand-dark/80 mb-10"
+          dangerouslySetInnerHTML={{ __html: animal.description || '' }}
+        />
 
-        <div className="flex flex-wrap gap-4">
-          {puedeAdoptar && (
-            <a
-              href={getAdoptionFormUrl(animal)}
-              target="_blank"
-              rel="noreferrer"
-              className="btn-primary"
-            >
-              ¡Quiero adoptarlo!
-            </a>
-          )}
-          {puedeAcoger && (
-            <a
-              href={siteConfig.formulariosExternos.acogida}
-              target="_blank"
-              rel="noreferrer"
-              className="btn-secondary"
-            >
-              ¡Quiero acogerlo!
-            </a>
-          )}
-        </div>
+        {/* En móvil, los botones se quedan aquí como hasta ahora. */}
+        <Botones className="flex md:hidden flex-wrap gap-4" />
       </div>
     </div>
   );

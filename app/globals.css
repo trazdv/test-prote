@@ -62,3 +62,37 @@ body {
 .tag-pill {
   @apply inline-block rounded-full bg-brand-cream/70 text-brand-dark text-xs font-semibold px-3 py-1 tracking-wide;
 }
+
+/* Placeholder del editor de texto enriquecido cuando está vacío */
+.rich-text-editable:empty::before {
+  content: attr(data-placeholder);
+  color: rgba(46, 42, 49, 0.4);
+}
+
+/* Estilos para el HTML generado por el editor, tanto en el propio editor
+   como al mostrarlo en las páginas públicas de animales y campañas */
+.rich-text-editable,
+.rich-text {
+  line-height: 1.7;
+}
+.rich-text-editable div,
+.rich-text div,
+.rich-text p {
+  margin-bottom: 0.5rem;
+}
+.rich-text-editable font[size="2"],
+.rich-text font[size="2"] {
+  font-size: 0.85em;
+}
+.rich-text-editable font[size="3"],
+.rich-text font[size="3"] {
+  font-size: 1em;
+}
+.rich-text-editable font[size="5"],
+.rich-text font[size="5"] {
+  font-size: 1.35em;
+}
+.rich-text-editable font[size="7"],
+.rich-text font[size="7"] {
+  font-size: 1.75em;
+}

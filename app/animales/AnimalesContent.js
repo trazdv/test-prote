@@ -11,14 +11,16 @@ export default function AnimalesContent() {
 
   const [especie, setEspecie] = useState(searchParams.get('especie') || '');
   const [sexo, setSexo] = useState(searchParams.get('sexo') || '');
+  const [soloAcogida, setSoloAcogida] = useState(searchParams.get('acogida') === '1');
   const [animals, setAnimals] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchAnimals = useCallback(async (esp, sx) => {
+  const fetchAnimals = useCallback(async (esp, sx, acogida) => {
     setLoading(true);
     const params = new URLSearchParams();
     if (esp) params.set('especie', esp);
     if (sx) params.set('sexo', sx);
+    if (acogida) params.set('etiqueta', 'Acogida');
     const res = await fetch(`/api/animals?${params.toString()}`);
     const data = await res.json();
     setAnimals(Array.isArray(data) ? data : []);
@@ -26,15 +28,17 @@ export default function AnimalesContent() {
   }, []);
 
   useEffect(() => {
-    fetchAnimals(especie, sexo);
-  }, [especie, sexo, fetchAnimals]);
+    fetchAnimals(especie, sexo, soloAcogida);
+  }, [especie, sexo, soloAcogida, fetchAnimals]);
 
-  const handleChange = ({ especie: e, sexo: s }) => {
+  const handleChange = ({ especie: e, sexo: s, soloAcogida: a }) => {
     setEspecie(e);
     setSexo(s);
+    setSoloAcogida(a);
     const params = new URLSearchParams();
     if (e) params.set('especie', e);
     if (s) params.set('sexo', s);
+    if (a) params.set('acogida', '1');
     router.push(`/animales?${params.toString()}`);
   };
 
@@ -44,10 +48,10 @@ export default function AnimalesContent() {
         Animales en adopción
       </h1>
       <p className="text-brand-dark/70 mb-8">
-        Filtra por tipo de animal y sexo para encontrar a tu compañero ideal.
+        Filtra por tipo de animal, sexo, o solo los que buscan un hogar de acogida.
       </p>
 
-      <FilterBar especie={especie} sexo={sexo} onChange={handleChange} />
+      <FilterBar especie={especie} sexo={sexo} soloAcogida={soloAcogida} onChange={handleChange} />
 
       {loading ? (
         <p className="text-brand-dark/50">Cargando animales...</p>

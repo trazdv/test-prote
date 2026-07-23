@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
+import { sanitizeRichText } from '@/lib/sanitizeHtml';
 import { ensureUniqueSlug } from '@/lib/ensureUniqueSlug';
 
 export async function GET(request, { params }) {
@@ -45,11 +46,12 @@ export async function PUT(request, { params }) {
     .update({
       title: body.title,
       slug: slugResult.slug,
-      description: body.description,
-      info2: body.info2,
+      description: sanitizeRichText(body.description),
+      info2: sanitizeRichText(body.info2),
       start_date: body.start_date,
       end_date: body.end_date || null,
       photos: body.photos || [],
+      cover_photo: body.coverPhoto || null,
     })
     .eq('id', params.id)
     .select()

@@ -59,6 +59,9 @@ where a.id = sub.id and (a.slug is null or a.slug = '');
 
 create unique index if not exists animals_slug_idx on animals (slug);
 
+-- Foto de portada elegida a mano (si es NULL, se usa la primera foto)
+alter table animals add column if not exists cover_photo text;
+
 -- ============================================================
 --  Cuentas de acceso al panel (voluntarios y superadmin)
 -- ============================================================
@@ -121,6 +124,9 @@ from (
 where c.id = sub.id and (c.slug is null or c.slug = '');
 
 create unique index if not exists campaigns_slug_idx on campaigns (slug);
+
+-- Foto de portada elegida a mano (si es NULL, se usa la primera foto)
+alter table campaigns add column if not exists cover_photo text;
 
 -- Esto también se puede crear desde el panel de Supabase:
 -- Storage > Create a new bucket > nombre: animal-photos > Public bucket: sí

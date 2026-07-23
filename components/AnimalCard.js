@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import TagBadge from './TagBadge';
 
 export default function AnimalCard({ animal, index = 0 }) {
-  const cover = animal.photos?.[0] || '/placeholder-animal.svg';
+  const cover = animal.cover_photo || animal.photos?.[0] || '/placeholder-animal.svg';
 
   return (
     <motion.div

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { siteConfig } from '@/lib/siteConfig';
 import { slugify } from '@/lib/slugify';
+import RichTextEditor from './RichTextEditor';
 
 const emptyAnimal = {
   name: '',
@@ -15,12 +16,17 @@ const emptyAnimal = {
   description: '',
   tags: [],
   photos: [],
+  coverPhoto: null,
 };
 
 export default function AnimalForm({ initialAnimal, animalId }) {
   const router = useRouter();
   const isEditing = Boolean(animalId);
-  const [animal, setAnimal] = useState(initialAnimal || emptyAnimal);
+  const [animal, setAnimal] = useState(
+    initialAnimal
+      ? { ...emptyAnimal, ...initialAnimal, coverPhoto: initialAnimal.cover_photo ?? initialAnimal.coverPhoto ?? null }
+      : emptyAnimal
+  );
   const [slugTocado, setSlugTocado] = useState(isEditing); // si edita, no lo autogeneramos
   const [newTag, setNewTag] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -68,6 +74,9 @@ export default function AnimalForm({ initialAnimal, animalId }) {
 
   const removePhoto = (url) => {
     update('photos', animal.photos.filter((p) => p !== url));
+    if (animal.coverPhoto === url) {
+      update('coverPhoto', null);
+    }
   };
 
   const addTag = (tag) => {
@@ -208,11 +217,10 @@ export default function AnimalForm({ initialAnimal, animalId }) {
 
       <div>
         <label className="block text-sm font-medium mb-1.5">Descripción</label>
-        <textarea
-          rows={5}
-          className="input-field"
+        <RichTextEditor
           value={animal.description}
-          onChange={(e) => update('description', e.target.value)}
+          onChange={(html) => update('description', html)}
+          placeholder="Cuenta su historia, carácter, cuidados que necesita..."
         />
       </div>
 
@@ -268,21 +276,36 @@ export default function AnimalForm({ initialAnimal, animalId }) {
       <div>
         <label className="block text-sm font-medium mb-1.5">Fotos</label>
         <div className="flex flex-wrap gap-3 mb-3">
-          {(animal.photos || []).map((url) => (
-            <div key={url} className="relative w-24 h-24 rounded-2xl overflow-hidden group">
-              <Image src={url} alt="Foto del animal" fill className="object-cover" />
-              <button
-                type="button"
-                onClick={() => removePhoto(url)}
-                className="absolute inset-0 bg-brand-dark/60 text-brand-white opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-sm"
-              >
-                Quitar
-              </button>
-            </div>
-          ))}
+          {(animal.photos || []).map((url) => {
+            const esPortada = (animal.coverPhoto || animal.photos[0]) === url;
+            return (
+              <div key={url} className="relative w-24 h-24 rounded-2xl overflow-hidden group">
+                <Image src={url} alt="Foto del animal" fill className="object-cover" />
+                {esPortada && (
+                  <span className="absolute top-1 left-1 bg-brand-cream text-brand-dark text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                    Portada
+                  </span>
+                )}
+                <div className="absolute inset-0 bg-brand-dark/60 text-brand-white opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center gap-1 text-xs">
+                  {!esPortada && (
+                    <button type="button" onClick={() => update('coverPhoto', url)} className="underline">
+                      Usar como portada
+                    </button>
+                  )}
+                  <button type="button" onClick={() => removePhoto(url)} className="underline">
+                    Quitar
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
         <input type="file" accept="image/*" multiple onChange={handleFileChange} disabled={uploading} />
         {uploading && <p className="text-sm text-brand-dark/50 mt-2">Subiendo fotos...</p>}
+        <p className="text-xs text-brand-dark/50 mt-2">
+          La foto marcada como "Portada" es la que aparece en el listado de animales. Si no eliges
+          ninguna, se usa la primera foto subida.
+        </p>
       </div>
 
       {error && <p className="text-red-600 text-sm">{error}</p>}

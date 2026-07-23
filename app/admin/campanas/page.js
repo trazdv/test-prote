@@ -60,7 +60,7 @@ export default function AdminCampanasPage() {
             <div key={c.id} className="card p-4">
               <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden mb-3 bg-brand-cream/30">
                 <Image
-                  src={c.photos?.[0] || '/placeholder-animal.svg'}
+                  src={c.cover_photo || c.photos?.[0] || '/placeholder-animal.svg'}
                   alt={c.title}
                   fill
                   className="object-cover"

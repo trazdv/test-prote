@@ -69,7 +69,7 @@ export default function AdminDashboardPage() {
             <div key={animal.id} className="card p-4">
               <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden mb-3 bg-brand-cream/30">
                 <Image
-                  src={animal.photos?.[0] || '/placeholder-animal.svg'}
+                  src={animal.cover_photo || animal.photos?.[0] || '/placeholder-animal.svg'}
                   alt={animal.name}
                   fill
                   className="object-cover"

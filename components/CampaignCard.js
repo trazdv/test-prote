@@ -8,8 +8,12 @@ function formatFecha(fecha) {
   return new Date(fecha).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
+function stripHtml(html) {
+  return (html || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
 export default function CampaignCard({ campaign }) {
-  const cover = campaign.photos?.[0] || '/placeholder-animal.svg';
+  const cover = campaign.cover_photo || campaign.photos?.[0] || '/placeholder-animal.svg';
 
   return (
     <Link href={`/campanas/${campaign.slug}`} className="card group block overflow-hidden hover:-translate-y-1 h-full">
@@ -24,7 +28,7 @@ export default function CampaignCard({ campaign }) {
       </div>
       <div className="p-5">
         <h3 className="font-display text-lg font-semibold mb-2">{campaign.title}</h3>
-        <p className="text-sm text-brand-dark/70 line-clamp-2 mb-2">{campaign.description}</p>
+        <p className="text-sm text-brand-dark/70 line-clamp-2 mb-2">{stripHtml(campaign.description)}</p>
         <p className="text-xs text-brand-dark/50">
           {formatFecha(campaign.start_date)}
           {campaign.end_date ? ` – ${formatFecha(campaign.end_date)}` : ' · sin fecha de fin'}

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
+import { sanitizeRichText } from '@/lib/sanitizeHtml';
 import { ensureUniqueSlug } from '@/lib/ensureUniqueSlug';
 
 // GET /api/animals -> lista pública de animales (con filtros opcionales)
@@ -9,12 +10,14 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const especie = searchParams.get('especie');
   const sexo = searchParams.get('sexo');
+  const etiqueta = searchParams.get('etiqueta');
 
   const supabase = getSupabaseAdmin();
   let query = supabase.from('animals').select('*').order('created_at', { ascending: false });
 
   if (especie) query = query.eq('species', especie);
   if (sexo) query = query.eq('sex', sexo);
+  if (etiqueta) query = query.contains('tags', [etiqueta]);
 
   const { data, error } = await query;
 
@@ -55,9 +58,10 @@ export async function POST(request) {
         species: body.species,
         sex: body.sex,
         age: body.age,
-        description: body.description,
+        description: sanitizeRichText(body.description),
         tags: body.tags || [],
         photos: body.photos || [],
+        cover_photo: body.coverPhoto || null,
       },
     ])
     .select()

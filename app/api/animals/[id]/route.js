@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
+import { sanitizeRichText } from '@/lib/sanitizeHtml';
 import { ensureUniqueSlug } from '@/lib/ensureUniqueSlug';
 
 export async function GET(request, { params }) {
@@ -48,9 +49,10 @@ export async function PUT(request, { params }) {
       species: body.species,
       sex: body.sex,
       age: body.age,
-      description: body.description,
+      description: sanitizeRichText(body.description),
       tags: body.tags || [],
       photos: body.photos || [],
+      cover_photo: body.coverPhoto || null,
     })
     .eq('id', params.id)
     .select()

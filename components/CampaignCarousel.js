@@ -5,6 +5,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
 
+function stripHtml(html) {
+  return (html || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
 export default function CampaignCarousel() {
   const [campaigns, setCampaigns] = useState([]);
   const [index, setIndex] = useState(0);
@@ -45,7 +49,7 @@ export default function CampaignCarousel() {
   if (loading || campaigns.length === 0) return null;
 
   const campaign = campaigns[index];
-  const cover = campaign.photos?.[0] || '/placeholder-animal.svg';
+  const cover = campaign.cover_photo || campaign.photos?.[0] || '/placeholder-animal.svg';
 
   return (
     <section className="container-page py-16">
@@ -73,7 +77,7 @@ export default function CampaignCarousel() {
             </div>
             <div className="p-8 flex flex-col justify-center">
               <h3 className="font-display text-2xl font-semibold mb-3">{campaign.title}</h3>
-              <p className="text-brand-dark/70 mb-6 line-clamp-3">{campaign.description}</p>
+              <p className="text-brand-dark/70 mb-6 line-clamp-3">{stripHtml(campaign.description)}</p>
               <Link href={`/campanas/${campaign.slug}`} className="btn-primary w-fit">
                 Ver más
               </Link>
