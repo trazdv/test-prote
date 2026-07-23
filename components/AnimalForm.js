@@ -41,7 +41,7 @@ export default function AnimalForm({ initialAnimal, animalId }) {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetch('/api/animals')
+    fetch('/api/animals', { cache: 'no-store' })
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {

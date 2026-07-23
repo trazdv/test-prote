@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 // los datos mas recientes de la base de datos.
 export const dynamic = 'force-dynamic';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
+import { noStoreJson } from '@/lib/noStoreJson';
 
 export async function GET(request, { params }) {
   const supabase = getSupabaseAdmin();
@@ -17,5 +18,5 @@ export async function GET(request, { params }) {
     return NextResponse.json({ error: 'No encontrado' }, { status: 404 });
   }
 
-  return NextResponse.json(data);
+  return noStoreJson(data);
 }

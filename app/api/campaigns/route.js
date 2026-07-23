@@ -6,6 +6,7 @@ export const dynamic = 'force-dynamic';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
+import { noStoreJson } from '@/lib/noStoreJson';
 import { sanitizeRichText } from '@/lib/sanitizeHtml';
 import { ensureUniqueSlug } from '@/lib/ensureUniqueSlug';
 
@@ -21,7 +22,7 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json(data);
+  return noStoreJson(data);
 }
 
 // POST /api/campaigns -> crear una campaña nueva (solo cuentas del panel)

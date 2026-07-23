@@ -21,7 +21,7 @@ export default function AnimalDetailPage({ params }) {
 
   useEffect(() => {
     const load = async () => {
-      const res = await fetch(`/api/animals/by-slug/${params.slug}`);
+      const res = await fetch(`/api/animals/by-slug/${params.slug}`, { cache: 'no-store' });
       if (!res.ok) {
         setError(true);
         setLoading(false);

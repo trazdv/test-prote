@@ -148,10 +148,23 @@ on conflict (id) do nothing;
 create table if not exists hero_photos (
   id uuid primary key default gen_random_uuid(),
   url text not null,
+  position integer default 0,
   created_at timestamp with time zone default now()
 );
 
 alter table hero_photos enable row level security;
+
+-- Para quien ya tuviera esta tabla de una versión anterior sin "position"
+alter table hero_photos add column if not exists position integer;
+
+update hero_photos
+set position = sub.rn
+from (
+  select id, row_number() over (order by created_at) as rn
+  from hero_photos
+  where position is null
+) sub
+where hero_photos.id = sub.id and hero_photos.position is null;
 
 drop policy if exists "Lectura pública de fotos de portada" on hero_photos;
 create policy "Lectura pública de fotos de portada"

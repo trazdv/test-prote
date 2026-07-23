@@ -15,7 +15,7 @@ export default function CampanaDetailPage({ params }) {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/campaigns/by-slug/${params.slug}`)
+    fetch(`/api/campaigns/by-slug/${params.slug}`, { cache: 'no-store' })
       .then((res) => {
         if (!res.ok) throw new Error();
         return res.json();

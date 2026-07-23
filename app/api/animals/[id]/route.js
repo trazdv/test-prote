@@ -6,6 +6,7 @@ export const dynamic = 'force-dynamic';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
+import { noStoreJson } from '@/lib/noStoreJson';
 import { sanitizeRichText } from '@/lib/sanitizeHtml';
 import { ensureUniqueSlug } from '@/lib/ensureUniqueSlug';
 import { syncAnimalPairing } from '@/lib/syncAnimalPairing';
@@ -22,7 +23,7 @@ export async function GET(request, { params }) {
     return NextResponse.json({ error: error.message }, { status: 404 });
   }
 
-  return NextResponse.json(data);
+  return noStoreJson(data);
 }
 
 export async function PUT(request, { params }) {

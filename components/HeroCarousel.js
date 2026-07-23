@@ -10,7 +10,7 @@ export default function HeroCarousel() {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    fetch('/api/hero-photos')
+    fetch('/api/hero-photos', { cache: 'no-store' })
       .then((res) => res.json())
       .then((data) => {
         setPhotos(Array.isArray(data) ? data : []);

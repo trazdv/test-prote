@@ -8,7 +8,7 @@ export default function EditarCampanaPage({ params }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/campaigns/${params.id}`)
+    fetch(`/api/campaigns/${params.id}`, { cache: 'no-store' })
       .then((res) => res.json())
       .then((data) => {
         setCampaign(data);

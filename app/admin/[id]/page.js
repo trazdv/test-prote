@@ -8,7 +8,7 @@ export default function EditarAnimalPage({ params }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/animals/${params.id}`)
+    fetch(`/api/animals/${params.id}`, { cache: 'no-store' })
       .then((res) => res.json())
       .then((data) => {
         setAnimal(data);
