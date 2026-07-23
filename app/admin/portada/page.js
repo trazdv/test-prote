@@ -12,7 +12,8 @@ export default function AdminPortadaPage() {
   const cargar = async () => {
     setLoading(true);
     const res = await fetch('/api/hero-photos', { cache: 'no-store' });
-    setPhotos(await res.json());
+    const json = await res.json();
+    setPhotos(Array.isArray(json) ? json : []);
     setLoading(false);
   };
 

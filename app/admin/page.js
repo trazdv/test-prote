@@ -13,7 +13,7 @@ export default function AdminDashboardPage() {
 
   const load = async () => {
     setLoading(true);
-    const res = await fetch('/api/animals', { cache: 'no-store' });
+    const res = await fetch(`/api/animals?t=${Date.now()}`, { cache: 'no-store' });
     const data = await res.json();
     setAnimals(Array.isArray(data) ? data : []);
     setLoading(false);

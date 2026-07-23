@@ -21,7 +21,7 @@ export default function AnimalDetailPage({ params }) {
 
   useEffect(() => {
     const load = async () => {
-      const res = await fetch(`/api/animals/by-slug/${params.slug}`, { cache: 'no-store' });
+      const res = await fetch(`/api/animals/by-slug/${params.slug}?t=${Date.now()}`, { cache: 'no-store' });
       if (!res.ok) {
         setError(true);
         setLoading(false);
@@ -32,6 +32,15 @@ export default function AnimalDetailPage({ params }) {
       setLoading(false);
     };
     load();
+
+    // Si el usuario vuelve a esta página con el botón "atrás" del navegador,
+    // este a veces la restaura tal cual estaba (sin volver a pedir datos).
+    // Forzamos una recarga de datos en ese caso concreto.
+    const handlePageShow = (event) => {
+      if (event.persisted) load();
+    };
+    window.addEventListener('pageshow', handlePageShow);
+    return () => window.removeEventListener('pageshow', handlePageShow);
   }, [params.slug]);
 
   if (loading) {

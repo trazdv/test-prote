@@ -8,7 +8,7 @@ export default function CampanasPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/campaigns', { cache: 'no-store' })
+    fetch(`/api/campaigns?t=${Date.now()}`, { cache: 'no-store' })
       .then((res) => res.json())
       .then((data) => {
         setCampaigns(Array.isArray(data) ? data : []);

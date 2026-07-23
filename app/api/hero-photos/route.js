@@ -11,17 +11,29 @@ import { noStoreJson } from '@/lib/noStoreJson';
 // GET /api/hero-photos -> lista pública de fotos del carrusel de portada, ordenadas
 export async function GET() {
   const supabase = getSupabaseAdmin();
-  const { data, error } = await supabase
+
+  let { data, error } = await supabase
     .from('hero_photos')
     .select('*')
     .order('position', { ascending: true, nullsFirst: false })
     .order('created_at', { ascending: true });
 
   if (error) {
+    // Si la columna "position" todavía no existe (falta ejecutar el SQL más
+    // reciente), no rompemos la web: mostramos las fotos ordenadas por fecha.
+    const fallback = await supabase
+      .from('hero_photos')
+      .select('*')
+      .order('created_at', { ascending: true });
+    data = fallback.data;
+    error = fallback.error;
+  }
+
+  if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return noStoreJson(data);
+  return noStoreJson(data || []);
 }
 
 // POST /api/hero-photos -> añade una foto ya subida (solo cuentas del panel),

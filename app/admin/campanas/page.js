@@ -15,7 +15,7 @@ export default function AdminCampanasPage() {
 
   const load = async () => {
     setLoading(true);
-    const res = await fetch('/api/campaigns', { cache: 'no-store' });
+    const res = await fetch(`/api/campaigns?t=${Date.now()}`, { cache: 'no-store' });
     const data = await res.json();
     setCampaigns(Array.isArray(data) ? data : []);
     setLoading(false);

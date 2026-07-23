@@ -21,6 +21,7 @@ export default function AnimalesContent() {
     if (esp) params.set('especie', esp);
     if (sx) params.set('sexo', sx);
     if (acogida) params.set('etiqueta', 'Acogida');
+    params.set('t', Date.now());
     const res = await fetch(`/api/animals?${params.toString()}`, { cache: 'no-store' });
     const data = await res.json();
     setAnimals(Array.isArray(data) ? data : []);

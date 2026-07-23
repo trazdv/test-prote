@@ -16,7 +16,7 @@ export default function CampaignCarousel() {
 
   useEffect(() => {
     const load = async () => {
-      const res = await fetch('/api/campaigns', { cache: 'no-store' });
+      const res = await fetch(`/api/campaigns?t=${Date.now()}`, { cache: 'no-store' });
       const data = await res.json();
       if (!Array.isArray(data)) {
         setLoading(false);

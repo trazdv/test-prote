@@ -15,19 +15,28 @@ export default function CampanaDetailPage({ params }) {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/campaigns/by-slug/${params.slug}`, { cache: 'no-store' })
-      .then((res) => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
-      .then((data) => {
-        setCampaign(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError(true);
-        setLoading(false);
-      });
+    const load = () => {
+      fetch(`/api/campaigns/by-slug/${params.slug}?t=${Date.now()}`, { cache: 'no-store' })
+        .then((res) => {
+          if (!res.ok) throw new Error();
+          return res.json();
+        })
+        .then((data) => {
+          setCampaign(data);
+          setLoading(false);
+        })
+        .catch(() => {
+          setError(true);
+          setLoading(false);
+        });
+    };
+    load();
+
+    const handlePageShow = (event) => {
+      if (event.persisted) load();
+    };
+    window.addEventListener('pageshow', handlePageShow);
+    return () => window.removeEventListener('pageshow', handlePageShow);
   }, [params.slug]);
 
   if (loading) {
