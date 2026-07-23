@@ -37,9 +37,24 @@ export default function CampanaDetailPage({ params }) {
     return notFound();
   }
 
+  const CuadroInteresa = ({ className }) =>
+    campaign.info2 ? (
+      <div className={`card bg-brand-cream/50 p-6 ${className}`}>
+        <h2 className="font-display text-xl font-semibold mb-3">¿Te interesa?</h2>
+        <div
+          className="rich-text text-brand-dark/80"
+          dangerouslySetInnerHTML={{ __html: campaign.info2 }}
+        />
+      </div>
+    ) : null;
+
   return (
     <div className="container-page py-14 grid md:grid-cols-2 gap-12">
-      <Carousel photos={campaign.photos} alt={campaign.title} />
+      <div>
+        <Carousel photos={campaign.photos} alt={campaign.title} />
+        {/* En escritorio, el cuadro "¿Te interesa?" va justo debajo de las fotos */}
+        <CuadroInteresa className="hidden md:block mt-6" />
+      </div>
 
       <div className="animate-fadeInUp">
         <h1 className="font-display text-4xl font-semibold mb-2">{campaign.title}</h1>
@@ -48,22 +63,15 @@ export default function CampanaDetailPage({ params }) {
           {campaign.end_date ? ` – ${formatFecha(campaign.end_date)}` : ' · sin fecha de fin'}
         </p>
 
-        {campaign.info2 && (
-          <div className="card bg-brand-cream/50 p-6 mb-8">
-            <h2 className="font-display text-xl font-semibold mb-3">¿Te interesa?</h2>
-            <div
-              className="rich-text text-brand-dark/80"
-              dangerouslySetInnerHTML={{ __html: campaign.info2 }}
-            />
-          </div>
-        )}
-
         {campaign.description && (
           <div
-            className="rich-text text-brand-dark/80"
+            className="rich-text text-brand-dark/80 mb-8"
             dangerouslySetInnerHTML={{ __html: campaign.description }}
           />
         )}
+
+        {/* En móvil, el cuadro "¿Te interesa?" se queda debajo de la descripción */}
+        <CuadroInteresa className="md:hidden" />
       </div>
     </div>
   );

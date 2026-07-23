@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Carousel from '@/components/Carousel';
 import TagBadge from '@/components/TagBadge';
@@ -45,9 +46,19 @@ export default function AnimalDetailPage({ params }) {
   const esPerroOGato = animal.species === 'Perro' || animal.species === 'Gato';
   const tieneCategoria = (animal.tags || []).some((t) => t === 'Cachorro' || t === 'Adulto');
   const puedeAdoptar = esPerroOGato && tieneCategoria;
+  const textoAdoptar = animal.sex === 'Hembra' ? '¡Quiero adoptarla!' : '¡Quiero adoptarlo!';
 
   const Botones = ({ className }) => (
     <div className={className}>
+      {animal.paired_animal && (
+        <div className="w-full card bg-brand-cream/50 p-4 text-sm text-brand-dark/80">
+          {animal.name} se adopta junto a{' '}
+          <Link href={`/animales/${animal.paired_animal.slug}`} className="font-semibold underline hover:no-underline">
+            {animal.paired_animal.name}
+          </Link>
+          , no pueden ser adoptados de forma individual.
+        </div>
+      )}
       {puedeAdoptar && (
         <a
           href={getAdoptionFormUrl(animal)}
@@ -55,7 +66,7 @@ export default function AnimalDetailPage({ params }) {
           rel="noreferrer"
           className="btn-primary"
         >
-          ¡Quiero adoptarlo!
+          {textoAdoptar}
         </a>
       )}
       {puedeAcoger && (

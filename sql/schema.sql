@@ -62,6 +62,9 @@ create unique index if not exists animals_slug_idx on animals (slug);
 -- Foto de portada elegida a mano (si es NULL, se usa la primera foto)
 alter table animals add column if not exists cover_photo text;
 
+-- Adopción conjunta: referencia a otro animal con el que se adopta a la vez
+alter table animals add column if not exists paired_animal_id uuid references animals(id) on delete set null;
+
 -- ============================================================
 --  Cuentas de acceso al panel (voluntarios y superadmin)
 -- ============================================================

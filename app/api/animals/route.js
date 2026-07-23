@@ -1,9 +1,14 @@
 import { NextResponse } from 'next/server';
+
+// Evita que Next.js cachee esta ruta como estatica: siempre debe leer
+// los datos mas recientes de la base de datos.
+export const dynamic = 'force-dynamic';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 import { sanitizeRichText } from '@/lib/sanitizeHtml';
 import { ensureUniqueSlug } from '@/lib/ensureUniqueSlug';
+import { syncAnimalPairing } from '@/lib/syncAnimalPairing';
 
 // GET /api/animals -> lista pública de animales (con filtros opcionales)
 export async function GET(request) {
@@ -62,6 +67,7 @@ export async function POST(request) {
         tags: body.tags || [],
         photos: body.photos || [],
         cover_photo: body.coverPhoto || null,
+        paired_animal_id: body.pairedAnimalId || null,
       },
     ])
     .select()
@@ -69,6 +75,15 @@ export async function POST(request) {
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  if (body.pairedAnimalId) {
+    await syncAnimalPairing({
+      supabase,
+      animalId: data.id,
+      oldPairedId: null,
+      newPairedId: body.pairedAnimalId,
+    });
   }
 
   return NextResponse.json(data, { status: 201 });

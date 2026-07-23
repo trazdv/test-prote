@@ -1,4 +1,8 @@
 import { NextResponse } from 'next/server';
+
+// Evita que Next.js cachee esta ruta como estatica: siempre debe leer
+// los datos mas recientes de la base de datos.
+export const dynamic = 'force-dynamic';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 export async function GET(request, { params }) {

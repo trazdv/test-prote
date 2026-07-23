@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { siteConfig } from '@/lib/siteConfig';
@@ -17,6 +17,7 @@ const emptyAnimal = {
   tags: [],
   photos: [],
   coverPhoto: null,
+  pairedAnimalId: null,
 };
 
 export default function AnimalForm({ initialAnimal, animalId }) {
@@ -24,14 +25,31 @@ export default function AnimalForm({ initialAnimal, animalId }) {
   const isEditing = Boolean(animalId);
   const [animal, setAnimal] = useState(
     initialAnimal
-      ? { ...emptyAnimal, ...initialAnimal, coverPhoto: initialAnimal.cover_photo ?? initialAnimal.coverPhoto ?? null }
+      ? {
+          ...emptyAnimal,
+          ...initialAnimal,
+          coverPhoto: initialAnimal.cover_photo ?? initialAnimal.coverPhoto ?? null,
+          pairedAnimalId: initialAnimal.paired_animal_id ?? initialAnimal.pairedAnimalId ?? null,
+        }
       : emptyAnimal
   );
+  const [otrosAnimales, setOtrosAnimales] = useState([]);
   const [slugTocado, setSlugTocado] = useState(isEditing); // si edita, no lo autogeneramos
   const [newTag, setNewTag] = useState('');
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetch('/api/animals')
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setOtrosAnimales(data.filter((a) => a.id !== animalId));
+        }
+      })
+      .catch(() => {});
+  }, [animalId]);
 
   const update = (field, value) => setAnimal((prev) => ({ ...prev, [field]: value }));
 
@@ -105,12 +123,28 @@ export default function AnimalForm({ initialAnimal, animalId }) {
     update('tags', value ? [...sinCategoria, value] : sinCategoria);
   };
 
+  const tieneAdopcionConjunta = animal.tags.includes('Adopción conjunta');
+
+  const handleToggleAdopcionConjunta = (activar) => {
+    if (activar) {
+      update('tags', [...animal.tags.filter((t) => t !== 'Adopción conjunta'), 'Adopción conjunta']);
+    } else {
+      update('tags', animal.tags.filter((t) => t !== 'Adopción conjunta'));
+      update('pairedAnimalId', null);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
     if (!categoriaEdad) {
       setError('Selecciona si es Cachorro o Adulto: es obligatorio para saber a qué formulario de adopción enlazar.');
+      return;
+    }
+
+    if (tieneAdopcionConjunta && !animal.pairedAnimalId) {
+      setError('Si activas "Adopción conjunta", tienes que elegir con qué animal se adopta.');
       return;
     }
 
@@ -271,6 +305,37 @@ export default function AnimalForm({ initialAnimal, animalId }) {
           Consejo: usa la etiqueta <strong>Acogida</strong> para que aparezca el botón
           "¡Quiero acogerlo!" en la ficha del animal.
         </p>
+      </div>
+
+      <div className="card p-5 bg-brand-cream/20">
+        <label className="flex items-center gap-2 text-sm font-semibold mb-1.5 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={tieneAdopcionConjunta}
+            onChange={(e) => handleToggleAdopcionConjunta(e.target.checked)}
+            className="w-4 h-4 accent-brand-dark"
+          />
+          Adopción conjunta
+        </label>
+        <p className="text-xs text-brand-dark/50 mb-3">
+          Actívalo si este animal solo se puede adoptar junto a otro (por ejemplo, dos hermanos que
+          no se separan).
+        </p>
+        {tieneAdopcionConjunta && (
+          <select
+            required
+            className="input-field"
+            value={animal.pairedAnimalId || ''}
+            onChange={(e) => update('pairedAnimalId', e.target.value || null)}
+          >
+            <option value="">Selecciona el otro animal...</option>
+            {otrosAnimales.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.name}
+              </option>
+            ))}
+          </select>
+        )}
       </div>
 
       <div>

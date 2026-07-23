@@ -1,9 +1,14 @@
 import { NextResponse } from 'next/server';
+
+// Evita que Next.js cachee esta ruta como estatica: siempre debe leer
+// los datos mas recientes de la base de datos.
+export const dynamic = 'force-dynamic';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 import { sanitizeRichText } from '@/lib/sanitizeHtml';
 import { ensureUniqueSlug } from '@/lib/ensureUniqueSlug';
+import { syncAnimalPairing } from '@/lib/syncAnimalPairing';
 
 export async function GET(request, { params }) {
   const supabase = getSupabaseAdmin();
@@ -41,6 +46,12 @@ export async function PUT(request, { params }) {
     return NextResponse.json({ error: slugResult.error }, { status: 409 });
   }
 
+  const { data: animalAntes } = await supabase
+    .from('animals')
+    .select('paired_animal_id')
+    .eq('id', params.id)
+    .single();
+
   const { data, error } = await supabase
     .from('animals')
     .update({
@@ -53,6 +64,7 @@ export async function PUT(request, { params }) {
       tags: body.tags || [],
       photos: body.photos || [],
       cover_photo: body.coverPhoto || null,
+      paired_animal_id: body.pairedAnimalId || null,
     })
     .eq('id', params.id)
     .select()
@@ -61,6 +73,13 @@ export async function PUT(request, { params }) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  await syncAnimalPairing({
+    supabase,
+    animalId: params.id,
+    oldPairedId: animalAntes?.paired_animal_id || null,
+    newPairedId: body.pairedAnimalId || null,
+  });
 
   return NextResponse.json(data);
 }
