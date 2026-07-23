@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 // Evita que Next.js cachee esta ruta como estatica: siempre debe leer
 // los datos mas recientes de la base de datos.
 export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 import { noStoreJson } from '@/lib/noStoreJson';
 
