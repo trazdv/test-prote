@@ -10,10 +10,8 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
-    { href: '/', label: 'Inicio' },
     { href: '/animales', label: 'Animales' },
     { href: '/campanas', label: 'Campañas' },
-    { href: '/voluntariado', label: 'Hazte voluntario' },
     { href: '/#sobre-nosotros', label: 'Sobre nosotros' },
     { href: '/#contacto', label: 'Contacto' },
   ];
