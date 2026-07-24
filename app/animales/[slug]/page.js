@@ -56,6 +56,7 @@ export default function AnimalDetailPage({ params }) {
   const tieneCategoria = (animal.tags || []).some((t) => t === 'Cachorro' || t === 'Adulto');
   const puedeAdoptar = esPerroOGato && tieneCategoria;
   const textoAdoptar = animal.sex === 'Hembra' ? '¡Quiero adoptarla!' : '¡Quiero adoptarlo!';
+  const textoAcoger = animal.sex === 'Hembra' ? '¡Quiero acogerla!' : '¡Quiero acogerlo!';
 
   const Botones = ({ className }) => (
     <div className={className}>
@@ -85,7 +86,7 @@ export default function AnimalDetailPage({ params }) {
           rel="noreferrer"
           className="btn-secondary"
         >
-          ¡Quiero acogerlo!
+          {textoAcoger}
         </a>
       )}
     </div>

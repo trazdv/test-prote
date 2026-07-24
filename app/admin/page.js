@@ -33,27 +33,34 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="container-page py-14">
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-10">
-        <div>
+      <div className="mb-10">
+        <div className="mb-5">
           <h1 className="font-display text-3xl font-semibold mb-1">Panel de administración</h1>
           <p className="text-brand-dark/60 text-sm">Gestiona las fichas de los animales de la protectora.</p>
         </div>
-        <div className="flex gap-3">
-          <Link href="/admin/nuevo" className="btn-primary">
+        <div
+          className="flex gap-3 overflow-x-auto pb-2 -mx-5 px-5 snap-x snap-mandatory
+            sm:mx-0 sm:px-0 sm:overflow-visible sm:flex-wrap sm:snap-none
+            [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        >
+          <Link href="/admin/nuevo" className="btn-primary shrink-0 snap-start whitespace-nowrap">
             + Añadir animal
           </Link>
-          <Link href="/admin/campanas" className="btn-outline">
+          <Link href="/admin/campanas" className="btn-outline shrink-0 snap-start whitespace-nowrap">
             Gestionar campañas
           </Link>
-          <Link href="/admin/portada" className="btn-outline">
+          <Link href="/admin/portada" className="btn-outline shrink-0 snap-start whitespace-nowrap">
             Carrusel de portada
           </Link>
           {esSuperadmin && (
-            <Link href="/admin/usuarios" className="btn-outline">
+            <Link href="/admin/usuarios" className="btn-outline shrink-0 snap-start whitespace-nowrap">
               Gestionar cuentas
             </Link>
           )}
-          <button onClick={() => signOut({ callbackUrl: '/' })} className="btn-outline">
+          <button
+            onClick={() => signOut({ callbackUrl: '/' })}
+            className="btn-outline shrink-0 snap-start whitespace-nowrap"
+          >
             Cerrar sesión
           </button>
         </div>
